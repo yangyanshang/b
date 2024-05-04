@@ -1,0 +1,137 @@
+#include <iostream>
+#include <fstream>
+#include <ctime>
+#include <cstdlib>
+#include <string>
+
+using namespace std;
+
+// 生成随机整数或小数
+float generateRandomNumber(int maxNumber, bool allowDecimal) {
+    if (allowDecimal) {
+        return (rand() % (maxNumber * 100)) / 100.0 + 1;
+    }
+    else {
+        return rand() % maxNumber + 1;
+    }
+}
+
+// 生成随机运算符
+char generateRandomOperator(bool allowAddition, bool allowSubtraction, bool allowMultiplication, bool allowDivision) {
+    char operators[4] = { '+', '-', '*', '/' };
+    char allowedOperators[4];
+    int count = 0;
+
+    if (allowAddition) {
+        allowedOperators[count++] = operators[0];
+    }
+    if (allowSubtraction) {
+        allowedOperators[count++] = operators[1];
+    }
+    if (allowMultiplication) {
+        allowedOperators[count++] = operators[2];
+    }
+    if (allowDivision) {
+        allowedOperators[count++] = operators[3];
+    }
+
+    return allowedOperators[rand() % count];
+}
+
+// 生成带括号的运算式
+string generateExpressionWithBrackets(int maxNumber, bool allowDecimal, bool allowAddition, bool allowSubtraction, bool allowMultiplication, bool allowDivision) {
+    float num1 = generateRandomNumber(maxNumber, allowDecimal);
+    float num2 = generateRandomNumber(maxNumber, allowDecimal);
+    float num3 = generateRandomNumber(maxNumber, allowDecimal);
+    char op1 = generateRandomOperator(allowAddition, allowSubtraction, allowMultiplication, allowDivision);
+    char op2 = generateRandomOperator(allowAddition, allowSubtraction, allowMultiplication, allowDivision);
+
+    string expression;
+    expression += "(";
+    expression += to_string(num1);
+    expression += " ";
+    expression += op1;
+    expression += " ";
+    expression += to_string(num2);
+    expression += ")";
+    expression += " ";
+    expression += op2;
+    expression += " ";
+    expression += to_string(num3);
+
+    return expression;
+}
+
+// 生成不带括号的运算式
+string generateExpressionWithoutBrackets(int maxNumber, bool allowDecimal, bool allowAddition, bool allowSubtraction, bool allowMultiplication, bool allowDivision) {
+    float num1 = generateRandomNumber(maxNumber, allowDecimal);
+    float num2 = generateRandomNumber(maxNumber, allowDecimal);
+    char op1 = generateRandomOperator(allowAddition, allowSubtraction, allowMultiplication, allowDivision);
+    char op2 = generateRandomOperator(allowAddition, allowSubtraction, allowMultiplication, allowDivision);
+
+    string expression;
+    expression += to_string(num1);
+    expression += " ";
+    expression += op1;
+    expression += " ";
+    expression += to_string(num2);
+    expression += " ";
+    expression += op2;
+    expression += " ";
+    expression += to_string(generateRandomNumber(maxNumber, allowDecimal));
+
+    return expression;
+}
+
+// 生成指定数量的运算题目
+void generateExercises(int numExercises, int maxNumber, bool allowDecimal, bool allowAddition, bool allowSubtraction, bool allowMultiplication, bool allowDivision, bool useBrackets) {
+    srand(time(0));
+
+    ofstream outputFile("Exercises.txt");
+    if (!outputFile.is_open()) {
+        cout << "无法打开文件！" << endl;
+        return;
+    }
+
+    for (int i = 0; i < numExercises; ++i) {
+        string expression;
+        if (useBrackets) {
+            expression = generateExpressionWithBrackets(maxNumber, allowDecimal, allowAddition, allowSubtraction, allowMultiplication, allowDivision);
+        }
+        else {
+            expression = generateExpressionWithoutBrackets(maxNumber, allowDecimal, allowAddition, allowSubtraction, allowMultiplication, allowDivision);
+        }
+
+        outputFile << expression << " =" << endl;
+    }
+
+    outputFile.close();
+}
+
+int main() {
+    int numExercises, maxNumber;
+    bool allowDecimal, allowAddition, allowSubtraction, allowMultiplication, allowDivision, useBrackets;
+
+    cout << "输入练习题数量：";
+    cin >> numExercises;
+    cout << "输入最大数值：";
+    cin >> maxNumber;
+    cout << "允许使用小数？（1表示是，0表示否）：";
+    cin >> allowDecimal;
+    cout << "允许加法？（1表示是，0表示否）：";
+    cin >> allowAddition;
+    cout << "允许减法？（1表示是，0表示否）：";
+    cin >> allowSubtraction;
+    cout << "允许乘法？（1表示是，0表示否）：";
+    cin >> allowMultiplication;
+    cout << "允许除法？（1表示是，0表示否）：";
+    cin >> allowDivision;
+    cout << "使用括号？（1表示是，0表示否）：";
+    cin >> useBrackets;
+
+    generateExercises(numExercises, maxNumber, allowDecimal, allowAddition, allowSubtraction, allowMultiplication, allowDivision, useBrackets);
+
+    cout << "练习题已成功生成！" << endl;
+
+    return 0;
+}
